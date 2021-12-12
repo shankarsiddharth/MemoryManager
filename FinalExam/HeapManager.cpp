@@ -1,4 +1,4 @@
-#define DEBUG_MEMORY
+#define DEBUG_SHOW_MEMORY_INFORMATION
 #define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
 
 #include "HeapManager.h"
@@ -20,7 +20,7 @@ HeapManager* HeapManager::Get()
 
 HeapManager* HeapManager::Create(void* i_pHeapMemory, size_t i_bytes, unsigned i_numDescriptors)
 {
-#ifdef DEBUG_MEMORY
+#ifdef DEBUG_SHOW_MEMORY_INFORMATION
 	void* pDebugMemoryStart = i_pHeapMemory;
 	printf("========================================HEAP MANAGER=======================================\n");
 	printf("pHeapManager Start Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart));
@@ -55,7 +55,7 @@ HeapManager* HeapManager::Create(size_t i_bytes, unsigned int i_numDescriptors)
 	void* pHeapMemory = VirtualAlloc(NULL, sizeHeapInPageMultiples, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	assert(pHeapMemory);
 	
-#ifdef DEBUG_MEMORY
+#ifdef DEBUG_SHOW_MEMORY_INFORMATION
 	void* pDebugMemoryStart = pHeapMemory;
 	printf("========================================HEAP MANAGER=======================================\n");
 	printf("pHeapManager Start Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart));
