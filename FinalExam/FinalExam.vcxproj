@@ -144,10 +144,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Allocators.cpp" />
+    <ClCompile Include="HeapManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MemorySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HeapManager.h" />
+    <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="MemorySystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
