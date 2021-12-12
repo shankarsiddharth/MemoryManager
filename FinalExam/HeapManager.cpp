@@ -8,11 +8,12 @@
 #include <iomanip>
 
 const size_t HeapManager::sDefaultAlignment = sizeof(size_t);
-uintptr_t HeapManager::sROOT = 0;
+uintptr_t HeapManager::sBaseAddressOfHeapManager = 0;
 
 HeapManager* HeapManager::Get()
 {
-	return reinterpret_cast<HeapManager*>(sROOT);
+	assert(sBaseAddressOfHeapManager != 0);
+	return reinterpret_cast<HeapManager*>(sBaseAddressOfHeapManager);
 }
 
 HeapManager* HeapManager::Create(void* i_pHeapMemory, size_t i_bytes, unsigned i_numDescriptors)
@@ -86,7 +87,7 @@ void HeapManager::Destroy()
 HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors)
 //HeapManager* HeapManager::Initialize(size_t i_bytes)
 {
-	sROOT = reinterpret_cast<uintptr_t>(i_pMemory);
+	sBaseAddressOfHeapManager = reinterpret_cast<uintptr_t>(i_pMemory);
 
 	//Initialize Heap Manager
 	pRoot = reinterpret_cast<uintptr_t>(i_pMemory);
