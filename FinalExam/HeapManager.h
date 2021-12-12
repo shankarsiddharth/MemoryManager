@@ -52,9 +52,10 @@ public:
 	}
 
 	static const size_t sDefaultAlignment;
-	static uintptr_t sROOT;
 
 private:
+	static uintptr_t sBaseAddressOfHeapManager;
+
 	HeapManager* Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors);
 	//HeapManager* Initialize(size_t i_Bytes);
 	static inline size_t GetSizeRequiredForANewBlock(size_t i_size, size_t i_align);
