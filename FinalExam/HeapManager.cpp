@@ -1,4 +1,5 @@
 #define DEBUG_MEMORY
+#define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
 
 #include "HeapManager.h"
 #include <Windows.h>
@@ -204,12 +205,15 @@ MemoryBlock* HeapManager::CoalesceWithNextBlock(MemoryBlock* i_pMemoryBlock)
 		i_pMemoryBlock->BlockSize = SizeFromCurrentBlock + SizeFromNextBlock;
 		i_pMemoryBlock->pNextBlock = pNextMemoryBlock->pNextBlock;
 		i_pMemoryBlock->pNextBlock->pPreviousBlock = i_pMemoryBlock;
+#ifdef DEBUG_CLEAR_MEMORY_AFTER_COLLECT
+		//Clear the Memory and initialize the collected memory with null values
 		void* pUserMemoryStart = reinterpret_cast<void*>(i_pMemoryBlock->pBaseAddress);
 		for(size_t index = 0; index < i_pMemoryBlock->BlockSize; index++)
 		{
 			*static_cast<char*>(pUserMemoryStart) = NULL;
 			pUserMemoryStart = static_cast<char*>(pUserMemoryStart) + 1;
 		}
+#endif
 		return i_pMemoryBlock;
 	}
 	return nullptr;
