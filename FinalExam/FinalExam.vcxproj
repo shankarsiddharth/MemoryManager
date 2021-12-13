@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeapManager.h" />
+    <ClInclude Include="MemoryAlignmentHelper.h" />
     <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="MemorySystem.h" />
   </ItemGroup>
