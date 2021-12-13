@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cassert>
 
-class MemoryAlignmentHelpers
+class MemoryAlignmentHelper
 {
 public:
 	static inline size_t AlignSize(size_t i_size, size_t i_align = sDefaultAlignment) {
@@ -19,14 +19,14 @@ public:
 		return (i_align & (i_align - 1)) == 0;
 	}
 
-	static inline uintptr_t AlignDown(uintptr_t i_value, size_t i_align)
+	static inline uintptr_t AlignDown(uintptr_t i_value, size_t i_align = sDefaultAlignment)
 	{
 		assert(i_align);
 		assert(IsPowerOfTwo(i_align));
 		return i_value & ~(i_align - 1);
 	}
 
-	static inline uintptr_t AlignUp(uintptr_t i_value, size_t i_align)
+	static inline uintptr_t AlignUp(uintptr_t i_value, size_t i_align = sDefaultAlignment)
 	{
 		assert(i_align);
 		assert(IsPowerOfTwo(i_align));
