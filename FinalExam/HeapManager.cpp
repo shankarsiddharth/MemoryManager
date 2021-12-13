@@ -8,7 +8,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "MemoryAlignmentHelpers.h"
+#include "MemoryAlignmentHelper.h"
 
 uintptr_t HeapManager::sBaseAddressOfHeapManager = 0;
 
@@ -132,7 +132,7 @@ HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i
 
 size_t HeapManager::GetSizeRequiredForANewBlock(size_t i_size, size_t i_align)
 {
-	const size_t alignPadding = MemoryAlignmentHelpers::AlignPadding(i_size, i_align);
+	const size_t alignPadding = MemoryAlignmentHelper::AlignPadding(i_size, i_align);
 	//const size_t requiredSize = (2 * sizeof(MemoryBlock)) + alignPadding + i_size;
 	const size_t requiredSize = sizeof(MemoryBlock) + alignPadding + i_size;
 	return requiredSize;
@@ -153,7 +153,7 @@ MemoryBlock* HeapManager::FindFirstFit(size_t i_size, size_t i_align) const
 			//uintptr_t EndOfAvailableBlock = reinterpret_cast<uintptr_t>(pAvailableBlock) + sizeof(MemoryBlock) + pAvailableBlock->BlockSize;
 			uintptr_t EndOfAvailableBlock = reinterpret_cast<uintptr_t>(pPotentialAvailableBlock->pNextBlock);
 			uintptr_t PotentialUserAddress = EndOfAvailableBlock - i_size;
-			uintptr_t AlignedUserAddress = MemoryAlignmentHelpers::AlignDown(PotentialUserAddress, i_align);
+			uintptr_t AlignedUserAddress = MemoryAlignmentHelper::AlignDown(PotentialUserAddress, i_align);
 			uintptr_t StartOfNewMemoryBlock = AlignedUserAddress - sizeof(MemoryBlock);
 			if (!(StartOfNewMemoryBlock < pPotentialAvailableBlock->pBaseAddress))
 			{
@@ -233,7 +233,7 @@ bool HeapManager::CheckAddressWithinHeap(uintptr_t i_AddressToCheck)
 
 void* HeapManager::Alloc(size_t i_size)
 {
-	return Alloc(i_size, MemoryAlignmentHelpers::sDefaultAlignment);
+	return Alloc(i_size, MemoryAlignmentHelper::sDefaultAlignment);
 }
 
 void* HeapManager::Alloc(size_t i_size, size_t i_align)
@@ -250,7 +250,7 @@ void* HeapManager::Alloc(size_t i_size, size_t i_align)
 	//uintptr_t EndOfAvailableBlock = reinterpret_cast<uintptr_t>(pAvailableBlock) + sizeof(MemoryBlock) + pAvailableBlock->BlockSize;
 	uintptr_t EndOfAvailableBlock = reinterpret_cast<uintptr_t>(pAvailableBlock->pNextBlock);
 	uintptr_t PotentialUserAddress = EndOfAvailableBlock - i_size;
-	uintptr_t AlignedUserAddress = MemoryAlignmentHelpers::AlignDown(PotentialUserAddress, i_align);
+	uintptr_t AlignedUserAddress = MemoryAlignmentHelper::AlignDown(PotentialUserAddress, i_align);
 	uintptr_t StartOfNewMemoryBlock = AlignedUserAddress - sizeof(MemoryBlock);
 
 	if(StartOfNewMemoryBlock < pAvailableBlock->pBaseAddress)
