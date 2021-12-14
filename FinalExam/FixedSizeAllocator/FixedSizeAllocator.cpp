@@ -56,7 +56,7 @@ void* FixedSizeAllocator::Alloc()
 	if(pFSABitArray->GetFirstClearBit(i_firstAvailable))
 	{
 		pFSABitArray->SetBit(i_firstAvailable);
-		const uintptr_t baseAddressOfUserMemory = pBaseAddressOfFixedSizeMemoryBlocks + (i_firstAvailable * FSAInfoData.sizeOfBlock);
+		uintptr_t baseAddressOfUserMemory = pBaseAddressOfFixedSizeMemoryBlocks + (i_firstAvailable * FSAInfoData.sizeOfBlock);
 		return reinterpret_cast<void*>(baseAddressOfUserMemory);
 	}
 	return nullptr;
@@ -88,10 +88,16 @@ bool FixedSizeAllocator::Contains(void* i_pMemory) const
 	if(isAddressWithinValidMemoryRange)
 	{
 		//Check memoryAddressToCheck is a valid base address
-		if(memoryAddressToCheck % FSAInfoData.sizeOfBlock == 0)
+		uintptr_t differenceInMemoryAddress = (memoryAddressToCheck - pBaseAddressOfFixedSizeMemoryBlocks);
+		if(differenceInMemoryAddress % FSAInfoData.sizeOfBlock == 0)
 		{
 			return true;
-		}
+		}/*
+		if(memoryAddressToCheck % MemoryAlignmentHelper::sDefaultAlignment == 0)
+		{
+			return true;
+		}*/
+		//return true;
 	}
 	return false;
 }
