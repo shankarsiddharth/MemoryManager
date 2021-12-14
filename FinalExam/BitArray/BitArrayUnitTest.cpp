@@ -41,7 +41,7 @@ int main(int i_arg, char**)
 	size_t firstSetBitIndex;
 	size_t firstClearBitIndex;
 
-	BitArray* bitArray = BitArray::Create(reinterpret_cast<void*>(endAddress), 70, true);
+	BitArray* bitArray = BitArray::Create(pHeapMemory, sizeHeap, 70, true);
 	bitArray->Display();
 	std::cout << "" << std::endl;
 
@@ -146,6 +146,31 @@ int main(int i_arg, char**)
 	firstSetBitIndex = 0;
 	std::cout << "IsFirstSetBitFound: " << bitArray->GetFirstSetBit(firstSetBitIndex) << std::endl;
 	std::cout << "FirstSetBitIndex: " << firstSetBitIndex << std::endl;
+	std::cout << "" << std::endl;
+
+	firstClearBitIndex = 0;
+	std::cout << "IsFirstClearBitIndexFound: " << bitArray->GetFirstClearBit(firstClearBitIndex) << std::endl;
+	std::cout << "FirstClearBitIndex: " << firstClearBitIndex << std::endl;
+	std::cout << "" << std::endl;
+	std::cout << "" << std::endl;
+
+	bitArray->ClearAll();
+	bitArray->Display();
+	std::cout << "bitArray->AreAllBitsClear(): " << bitArray->AreAllBitsClear() << std::endl;
+	bitArray->Display();
+	std::cout << "" << std::endl;
+
+	for (size_t index = 0; index < bitArray->GetBitArraySize(); index++)
+	{
+		bitArray->SetBit(index);
+	}
+	bitArray->Display();
+	std::cout << "" << std::endl;
+
+	firstClearBitIndex = 0;
+	std::cout << "IsFirstClearBitIndexFound: " << bitArray->GetFirstClearBit(firstClearBitIndex) << std::endl;
+	std::cout << "FirstClearBitIndex: " << firstClearBitIndex << std::endl;
+	std::cout << "" << std::endl;
 	std::cout << "" << std::endl;
 
 	//bitArray->SetBit(80);
