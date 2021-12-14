@@ -3,7 +3,9 @@
 
 FixedSizeAllocator* FixedSizeAllocator::Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemoryMemory, size_t i_sizeOfBlock, size_t i_numberOfBlocks)
 {
-	size_t requiredSizeForMemoryBlocks = GetRequiredSizeForBlocks(i_sizeOfBlock, i_numberOfBlocks);
+	assert(i_numberOfBlocks);
+
+	size_t requiredSizeForMemoryBlocks = GetRequiredSizeForFixedSizeMemoryBlocks(i_sizeOfBlock, i_numberOfBlocks);
 	uintptr_t startAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory);
 	uintptr_t endAddressOfAvailableMemory = startAddressOfAvailableMemory + i_sizeOfAvailableMemoryMemory;
 	uintptr_t baseAddressOfFixedSizeMemoryBlocks = endAddressOfAvailableMemory - requiredSizeForMemoryBlocks;
@@ -35,12 +37,10 @@ FixedSizeAllocator* FixedSizeAllocator::Initialize(uintptr_t i_rootAddress, size
 	pRoot = i_rootAddress;
 	totalSize = i_totalSize;
 
-	//uintptr_t addressOfFSAData = pRoot + sizeof(size_t);
-	//pFSAData = reinterpret_cast<FSAData*>(addressOfFSAData);
-	FSAInfo.sizeOfBlock = i_sizeOfBlock;
-	FSAInfo.numberOfBlocks = i_numberOfBlocks;
+	FSAInfoData.sizeOfBlock = i_sizeOfBlock;
+	FSAInfoData.numberOfBlocks = i_numberOfBlocks;
 
-	pFSABlockData = BitArray::Create(reinterpret_cast<void*>(i_pBaseAddressOfAvailableMemory), i_remainingAvailableSize, i_numberOfBlocks, false);
+	pFSABitArray = BitArray::Create(reinterpret_cast<void*>(i_pBaseAddressOfAvailableMemory), i_remainingAvailableSize, i_numberOfBlocks, true);
 	pBaseAddressOfFixedSizeMemoryBlocks = i_alignedBaseAddressOfFixedSizeMemoryBlocks;
 
 	return reinterpret_cast<FixedSizeAllocator*>(pRoot);
@@ -50,22 +50,58 @@ void FixedSizeAllocator::Destroy()
 {
 }
 
-void* FixedSizeAllocator::Alloc(size_t i_size)
+void* FixedSizeAllocator::Alloc()
 {
+	size_t i_firstAvailable;
+	if(pFSABitArray->GetFirstClearBit(i_firstAvailable))
+	{
+		pFSABitArray->SetBit(i_firstAvailable);
+		const uintptr_t baseAddressOfUserMemory = pBaseAddressOfFixedSizeMemoryBlocks + (i_firstAvailable * FSAInfoData.sizeOfBlock);
+		return reinterpret_cast<void*>(baseAddressOfUserMemory);
+	}
 	return nullptr;
 }
 
 bool FixedSizeAllocator::Free(void* i_pMemory)
 {
+	assert(Contains(i_pMemory));
+	uintptr_t memoryAddressToCheck = reinterpret_cast<uintptr_t>(i_pMemory);
+	size_t bitIndex = (memoryAddressToCheck - pBaseAddressOfFixedSizeMemoryBlocks) / FSAInfoData.sizeOfBlock;
+	assert(bitIndex < FSAInfoData.numberOfBlocks);
+	if(pFSABitArray->IsBitSet(bitIndex))
+	{
+		pFSABitArray->ClearBit(bitIndex);
+		return true;
+	}
 	return false;
 }
 
-bool FixedSizeAllocator::Contains(void* i_pMemory)
+bool FixedSizeAllocator::Contains(void* i_pMemory) const
 {
+	if(i_pMemory == nullptr)
+	{
+		return false;
+	}
+	uintptr_t memoryAddressToCheck = reinterpret_cast<uintptr_t>(i_pMemory);
+	uintptr_t endAddressOfFixedSizeMemoryBlocks = pBaseAddressOfFixedSizeMemoryBlocks + (FSAInfoData.numberOfBlocks * FSAInfoData.sizeOfBlock);
+	bool isAddressWithinValidMemoryRange = (memoryAddressToCheck >= pBaseAddressOfFixedSizeMemoryBlocks && memoryAddressToCheck < endAddressOfFixedSizeMemoryBlocks);
+	if(isAddressWithinValidMemoryRange)
+	{
+		//Check memoryAddressToCheck is a valid base address
+		if(memoryAddressToCheck % FSAInfoData.sizeOfBlock == 0)
+		{
+			return true;
+		}
+	}
 	return false;
 }
 
-size_t FixedSizeAllocator::GetRequiredSizeForBlocks(size_t i_sizeOfBlock, size_t i_numberOfBlocks)
+FSAData FixedSizeAllocator::GetFSAData() const
+{
+	return FSAInfoData;
+}
+
+size_t FixedSizeAllocator::GetRequiredSizeForFixedSizeMemoryBlocks(size_t i_sizeOfBlock, size_t i_numberOfBlocks)
 {
 	return i_sizeOfBlock * i_numberOfBlocks;
 }
