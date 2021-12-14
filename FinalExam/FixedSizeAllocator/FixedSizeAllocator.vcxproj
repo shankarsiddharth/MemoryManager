@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Allocators.cpp" />
-    <ClCompile Include="..\HeapManager.cpp" />
+    <ClCompile Include="..\LinkedListAllocator.cpp" />
     <ClCompile Include="..\MemorySystem.cpp" />
     <ClCompile Include="BitArray.cpp" />
     <ClCompile Include="FixedSizeAllocator.cpp" />
