@@ -21,7 +21,7 @@ const size_t BitArray::sBitsPerElement = sizeof(uintptr_t) * 8; //8 bits per byt
 
 BitArray* BitArray::Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits, bool i_bInitToZero)
 {
-	assert(i_numBits != 0);
+	assert(i_numBits);
 
 	size_t requiredSize = GetRequiredArraySizeForBits(i_numBits);
 	uintptr_t startAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory);
