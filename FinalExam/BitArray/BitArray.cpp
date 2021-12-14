@@ -19,28 +19,24 @@
 
 const size_t BitArray::sBitsPerElement = sizeof(uintptr_t) * 8; //8 bits per byte
 
-BitArray* BitArray::Create(void* i_pBaseAddress, size_t i_numBits, bool i_bInitToZero)
+BitArray* BitArray::Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits, bool i_bInitToZero)
 {
 	size_t requiredSize = GetRequiredArraySizeForBits(i_numBits);
-	uintptr_t baseAddressOfBitData = reinterpret_cast<uintptr_t>(i_pBaseAddress) - requiredSize;
+	uintptr_t endAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory) + i_sizeOfAvailableMemory;
+	uintptr_t baseAddressOfBitData = endAddressOfAvailableMemory - requiredSize;
 	uintptr_t alignedBaseAddressOfBitData = MemoryAlignmentHelper::AlignDown(baseAddressOfBitData);
 
 	uintptr_t rootAddress = alignedBaseAddressOfBitData - sizeof(BitArray);
 
+	//Make sure the rootAddress is within the available memory range
+	//If assert fails increase the available memory
+	bool isValidRootAddress = (rootAddress > reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory)) && (rootAddress < endAddressOfAvailableMemory);
+	assert(isValidRootAddress);
+
 	BitArray* bitArray = reinterpret_cast<BitArray*>(rootAddress);
 	assert(bitArray);
 
-	//m_pBits = new uintptr_t[i_numBits / sBitsPerElement];
 	return bitArray->Initialize(rootAddress, alignedBaseAddressOfBitData, i_numBits, i_bInitToZero);
-}
-
-//BitArray::~BitArray()
-//{
-//
-//}
-
-void BitArray::Destroy()
-{
 }
 
 BitArray* BitArray::Initialize(uintptr_t i_rootAddress, uintptr_t i_alignedBaseAddressOfBitData, size_t i_numBits, bool i_bInitToZero)
@@ -71,6 +67,42 @@ BitArray* BitArray::Initialize(uintptr_t i_rootAddress, uintptr_t i_alignedBaseA
 
 	return reinterpret_cast<BitArray*>(pRoot);
 }
+
+void BitArray::Destroy()
+{
+}
+
+//BitArray::BitArray(size_t i_numBits, bool i_bInitToZero)
+//	: numBits(i_numBits),
+//	arraySize(i_numBits / sBitsPerElement)
+//{
+//	const size_t extraBits = i_numBits % sBitsPerElement;
+//	if (extraBits != 0)
+//	{
+//		arraySize = (i_numBits / sBitsPerElement) + 1;
+//	}
+//
+//	pBitData = new uintptr_t[arraySize];
+//
+//#ifdef _WIN64
+//	const uintptr_t fillValue = (i_bInitToZero ? static_cast<uintptr_t>(0) : UINT64_MAX);
+//#else
+//	const uintptr_t fillValue = (i_bInitToZero ? static_cast<uintptr_t>(0) : UINT32_MAX);
+//#endif
+//
+//	for (size_t sizeIndex = 0; sizeIndex < arraySize; sizeIndex++)
+//	{
+//		pBitData[sizeIndex] = fillValue;
+//	}
+//}
+//
+//BitArray::~BitArray()
+//{
+//	if(pBitData)
+//	{
+//		delete[] pBitData;
+//	}
+//}
 
 void BitArray::Display()
 {

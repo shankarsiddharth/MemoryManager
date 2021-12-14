@@ -4,9 +4,11 @@
 class BitArray
 {
 public:
-	static BitArray* Create(void* i_pBaseAddress, size_t i_numBits, bool i_bInitToZero = true);
-	//~BitArray();
+	static BitArray* Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits, bool i_bInitToZero = true);
 	void Destroy();
+
+	/*BitArray(size_t i_numBits, bool i_bInitToZero = true);
+	~BitArray();*/
 
 	static size_t GetRequiredArraySizeForBits(size_t i_numBits);
 
