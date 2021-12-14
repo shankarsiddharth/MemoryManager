@@ -1,8 +1,11 @@
 //#define USE_HEAP_ALLOC
 
 #include <cassert>
+#include <cinttypes>
 #include <crtdbg.h>
+#include <iostream>
 #include <Windows.h>
+#include <cstdio>
 
 #include "BitArray.h"
 #include "FixedSizeAllocator.h"
@@ -38,7 +41,75 @@ int main(int i_arg, char**)
 	uintptr_t endAddress = reinterpret_cast<uintptr_t>(pHeapMemory) + sizeHeap;
 	FixedSizeAllocator* fixed_size_allocator = FixedSizeAllocator::Create(pHeapMemory, sizeHeap, 16, 8);
 
+	void* address1 = fixed_size_allocator->Alloc();
+	void* pDebugMemoryStart = address1;
+	for (size_t index = 0; index < fixed_size_allocator->GetFSAData().sizeOfBlock; index++)
+	{
+		*static_cast<char*>(pDebugMemoryStart) = '~';
+		pDebugMemoryStart = static_cast<char*>(pDebugMemoryStart) + 1;
+	}
 
+	void* address2 = fixed_size_allocator->Alloc();
+	pDebugMemoryStart = address2;
+	for (size_t index = 0; index < fixed_size_allocator->GetFSAData().sizeOfBlock; index++)
+	{
+		*static_cast<char*>(pDebugMemoryStart) = '~';
+		pDebugMemoryStart = static_cast<char*>(pDebugMemoryStart) + 1;
+	}
+
+	uintptr_t addressToCheck = reinterpret_cast<uintptr_t>(address2) + fixed_size_allocator->GetFSAData().sizeOfBlock;
+	void* addressToCheckPtr = reinterpret_cast<void*>(addressToCheck);
+	if(fixed_size_allocator->Contains(addressToCheckPtr))
+	{
+		printf("Valid Address 0x%" PRIXPTR "\n", addressToCheck);		
+	}
+	else
+	{
+		printf("InValid Address 0x%" PRIXPTR "\n", addressToCheck);
+	}
+
+	addressToCheck = reinterpret_cast<uintptr_t>(address1) + (fixed_size_allocator->GetFSAData().sizeOfBlock * fixed_size_allocator->GetFSAData().numberOfBlocks);
+	addressToCheckPtr = reinterpret_cast<void*>(addressToCheck);
+	if (fixed_size_allocator->Contains(addressToCheckPtr))
+	{
+		printf("Valid Address 0x%" PRIXPTR "\n", addressToCheck);
+	}
+	else
+	{
+		printf("InValid Address 0x%" PRIXPTR "\n", addressToCheck);
+	}
+
+	addressToCheck = reinterpret_cast<uintptr_t>(address1) + 15;
+	addressToCheckPtr = reinterpret_cast<void*>(addressToCheck);
+	if (fixed_size_allocator->Contains(addressToCheckPtr))
+	{
+		printf("Valid Address 0x%" PRIXPTR "\n", addressToCheck);
+	}
+	else
+	{
+		printf("InValid Address 0x%" PRIXPTR "\n", addressToCheck);
+	}
+	//fixed_size_allocator->Free(addressToCheckPtr);
+	//fixed_size_allocator->Free(address1);
+	//fixed_size_allocator->Free(address2);
+
+	if(fixed_size_allocator->Free(address1))
+	{
+		printf("Freed Address 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(address1));
+	}
+	else
+	{
+		printf("NOT Freed Address 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(address1));
+	}
+
+	if (fixed_size_allocator->Free(address1))
+	{
+		printf("Freed Address 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(address1));
+	}
+	else
+	{
+		printf("NOT Freed Address 0x%" PRIXPTR "\n", reinterpret_cast<uintptr_t>(address1));
+	}
 
 	if (pHeapMemory)
 	{

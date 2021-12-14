@@ -13,17 +13,19 @@ public:
 	FixedSizeAllocator* Initialize(uintptr_t i_rootAddress, size_t i_totalSize,
 		size_t i_sizeOfBlock, size_t i_numberOfBlocks, uintptr_t i_pBaseAddressOfAvailableMemory, size_t i_remainingAvailableSize, uintptr_t i_alignedBaseAddressOfFixedSizeMemoryBlocks);
 
-	void* Alloc(size_t i_size);
+	void* Alloc();
 	bool Free(void* i_pMemory);
-	bool Contains(void* i_pMemory);
+	bool Contains(void* i_pMemory) const;
 
-	static size_t GetRequiredSizeForBlocks(size_t i_sizeOfBlock, size_t i_numberOfBlocks);
+	FSAData GetFSAData() const;
+
+	static size_t GetRequiredSizeForFixedSizeMemoryBlocks(size_t i_sizeOfBlock, size_t i_numberOfBlocks);
 
 private:
 	uintptr_t pRoot = 0;
 	size_t totalSize = 0;
-	FSAData FSAInfo = {0,0};
-	BitArray* pFSABlockData = nullptr;
+	FSAData FSAInfoData = {0,0};
+	BitArray* pFSABitArray = nullptr;
 	uintptr_t pBaseAddressOfFixedSizeMemoryBlocks = 0;
 };
 
