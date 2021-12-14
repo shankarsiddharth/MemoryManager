@@ -27,7 +27,7 @@
     <ClCompile Include="..\Allocators.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\HeapManager.cpp">
+    <ClCompile Include="..\LinkedListAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\MemorySystem.cpp">

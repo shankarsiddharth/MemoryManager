@@ -24,7 +24,7 @@
     <ClCompile Include="Allocators.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HeapManager.cpp">
+    <ClCompile Include="LinkedListAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClInclude Include="MemorySystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HeapManager.h">
+    <ClInclude Include="LinkedListAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MemoryBlock.h">

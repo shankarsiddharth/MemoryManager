@@ -5,12 +5,12 @@
 
 struct MemoryBlock;
 
-class HeapManager
+class LinkedListAllocator
 {
 public:
-	static HeapManager* Get();
-	static HeapManager* Create(void* i_pHeapMemory, size_t i_bytes, unsigned int i_numDescriptors);
-	static HeapManager* Create(size_t i_bytes, unsigned int i_numDescriptors);
+	static LinkedListAllocator* Get();
+	static LinkedListAllocator* Create(void* i_pHeapMemory, size_t i_bytes, unsigned int i_numDescriptors);
+	static LinkedListAllocator* Create(size_t i_bytes, unsigned int i_numDescriptors);
 	void Destroy();
 
 	void* Alloc(size_t i_size);	
@@ -27,8 +27,8 @@ public:
 private:
 	static uintptr_t sBaseAddressOfHeapManager;
 
-	HeapManager* Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors);
-	//HeapManager* Initialize(size_t i_Bytes);
+	LinkedListAllocator* Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors);
+	//LinkedListAllocator* Initialize(size_t i_Bytes);
 	static inline size_t GetSizeRequiredForANewBlock(size_t i_size, size_t i_align);
 	MemoryBlock* FindFirstFit(size_t i_size, size_t i_align) const;
 	void DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const;

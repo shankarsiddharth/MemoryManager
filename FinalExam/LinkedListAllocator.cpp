@@ -1,7 +1,7 @@
 #define DEBUG_SHOW_MEMORY_INFORMATION
 #define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
 
-#include "HeapManager.h"
+#include "LinkedListAllocator.h"
 #include <Windows.h>
 
 #include <cstdio>
@@ -10,15 +10,15 @@
 
 #include "MemoryAlignmentHelper.h"
 
-uintptr_t HeapManager::sBaseAddressOfHeapManager = 0;
+uintptr_t LinkedListAllocator::sBaseAddressOfHeapManager = 0;
 
-HeapManager* HeapManager::Get()
+LinkedListAllocator* LinkedListAllocator::Get()
 {
 	assert(sBaseAddressOfHeapManager != 0);
-	return reinterpret_cast<HeapManager*>(sBaseAddressOfHeapManager);
+	return reinterpret_cast<LinkedListAllocator*>(sBaseAddressOfHeapManager);
 }
 
-HeapManager* HeapManager::Create(void* i_pHeapMemory, size_t i_bytes, unsigned i_numDescriptors)
+LinkedListAllocator* LinkedListAllocator::Create(void* i_pHeapMemory, size_t i_bytes, unsigned i_numDescriptors)
 {
 #ifdef DEBUG_SHOW_MEMORY_INFORMATION
 	void* pDebugMemoryStart = i_pHeapMemory;
@@ -34,15 +34,15 @@ HeapManager* HeapManager::Create(void* i_pHeapMemory, size_t i_bytes, unsigned i
 	}*/
 #endif
 
-	auto pHeapManager = static_cast<HeapManager*>(i_pHeapMemory);
+	auto pHeapManager = static_cast<LinkedListAllocator*>(i_pHeapMemory);
 	assert(pHeapManager);
 
 	return pHeapManager->Initialize(i_pHeapMemory, i_bytes, i_numDescriptors);
 }
 
-HeapManager* HeapManager::Create(size_t i_bytes, unsigned int i_numDescriptors)
+LinkedListAllocator* LinkedListAllocator::Create(size_t i_bytes, unsigned int i_numDescriptors)
 {
-	assert((i_bytes) > sizeof(HeapManager));
+	assert((i_bytes) > sizeof(LinkedListAllocator));
 
 	SYSTEM_INFO SysInfo;
 	GetSystemInfo(&SysInfo);
@@ -50,7 +50,7 @@ HeapManager* HeapManager::Create(size_t i_bytes, unsigned int i_numDescriptors)
 	assert(SysInfo.dwPageSize > 0);
 
 	const size_t sizeHeapInPageMultiples = SysInfo.dwPageSize * ((i_bytes + SysInfo.dwPageSize) / SysInfo.dwPageSize);
-	assert((sizeHeapInPageMultiples) > sizeof(HeapManager));
+	assert((sizeHeapInPageMultiples) > sizeof(LinkedListAllocator));
 
 	void* pHeapMemory = VirtualAlloc(NULL, sizeHeapInPageMultiples, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	assert(pHeapMemory);
@@ -69,13 +69,13 @@ HeapManager* HeapManager::Create(size_t i_bytes, unsigned int i_numDescriptors)
 	}*/
 #endif
 
-	auto pHeapManager = static_cast<HeapManager*>(pHeapMemory);
+	auto pHeapManager = static_cast<LinkedListAllocator*>(pHeapMemory);
 	assert(pHeapManager);
 
 	return pHeapManager->Initialize(pHeapMemory, i_bytes, i_numDescriptors);
 }
 
-void HeapManager::Destroy()
+void LinkedListAllocator::Destroy()
 {
 	void* pHeapMemoryStart = reinterpret_cast<void*>(pRoot);
 	const size_t totalSize = totalHeapSize;
@@ -86,14 +86,14 @@ void HeapManager::Destroy()
 	}
 }
 
-HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors)
-//HeapManager* HeapManager::Initialize(size_t i_bytes)
+LinkedListAllocator* LinkedListAllocator::Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors)
+//LinkedListAllocator* LinkedListAllocator::Initialize(size_t i_bytes)
 {
 	sBaseAddressOfHeapManager = reinterpret_cast<uintptr_t>(i_pMemory);
 
 	//Initialize Heap Manager
 	pRoot = reinterpret_cast<uintptr_t>(i_pMemory);
-	pHead = reinterpret_cast<MemoryBlock*>(pRoot + sizeof(HeapManager));
+	pHead = reinterpret_cast<MemoryBlock*>(pRoot + sizeof(LinkedListAllocator));
 	pTail = reinterpret_cast<MemoryBlock*>(pRoot + i_bytes - sizeof(MemoryBlock));
 	totalHeapSize = i_bytes;
 
@@ -112,7 +112,7 @@ HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i
 	pTail->bIsAllocated = true;
 
 	//Create the InitialMemoryBlock i.e. Heap Memory Available to the User
-	const size_t AvailableMemory = i_bytes - sizeof(HeapManager) - sizeof(MemoryBlock) - sizeof(MemoryBlock);
+	const size_t AvailableMemory = i_bytes - sizeof(LinkedListAllocator) - sizeof(MemoryBlock) - sizeof(MemoryBlock);
 	assert(AvailableMemory > 0);	
 	MemoryBlock* pNewMemoryBlock = reinterpret_cast<MemoryBlock*>(pTail->pBaseAddress - AvailableMemory);
 	pNewMemoryBlock->pBaseAddress = reinterpret_cast<uintptr_t>(pNewMemoryBlock) + sizeof(MemoryBlock);
@@ -127,10 +127,10 @@ HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i
 	pHead->pNextBlock = pNewMemoryBlock;
 	pTail->pPreviousBlock = pNewMemoryBlock;
 
-	return reinterpret_cast<HeapManager*>(pRoot);
+	return reinterpret_cast<LinkedListAllocator*>(pRoot);
 }
 
-size_t HeapManager::GetSizeRequiredForANewBlock(size_t i_size, size_t i_align)
+size_t LinkedListAllocator::GetSizeRequiredForANewBlock(size_t i_size, size_t i_align)
 {
 	const size_t alignPadding = MemoryAlignmentHelper::AlignPadding(i_size, i_align);
 	//const size_t requiredSize = (2 * sizeof(MemoryBlock)) + alignPadding + i_size;
@@ -138,7 +138,7 @@ size_t HeapManager::GetSizeRequiredForANewBlock(size_t i_size, size_t i_align)
 	return requiredSize;
 }
 
-MemoryBlock* HeapManager::FindFirstFit(size_t i_size, size_t i_align) const
+MemoryBlock* LinkedListAllocator::FindFirstFit(size_t i_size, size_t i_align) const
 {	
 	const size_t SizeRequired = GetSizeRequiredForANewBlock(i_size, i_align);
 
@@ -165,7 +165,7 @@ MemoryBlock* HeapManager::FindFirstFit(size_t i_size, size_t i_align) const
 	return IteratorBlock;
 }
 
-void HeapManager::PrintDisplayHeading() const
+void LinkedListAllocator::PrintDisplayHeading() const
 {
 	const char separator = ' ';
 	std::cout << " | ";
@@ -184,7 +184,7 @@ void HeapManager::PrintDisplayHeading() const
 	std::cout << std::endl;
 }
 
-bool HeapManager::canCoalesceWithNextMemoryBlock(MemoryBlock* i_pMemoryBlock)
+bool LinkedListAllocator::canCoalesceWithNextMemoryBlock(MemoryBlock* i_pMemoryBlock)
 {
 	if(i_pMemoryBlock == nullptr)
 	{
@@ -194,7 +194,7 @@ bool HeapManager::canCoalesceWithNextMemoryBlock(MemoryBlock* i_pMemoryBlock)
 	return !i_pMemoryBlock->bIsAllocated && i_pMemoryBlock->pNextBlock && !i_pMemoryBlock->pNextBlock->bIsAllocated;
 }
 
-MemoryBlock* HeapManager::CoalesceWithNextBlock(MemoryBlock* i_pMemoryBlock)
+MemoryBlock* LinkedListAllocator::CoalesceWithNextBlock(MemoryBlock* i_pMemoryBlock)
 {
 	MemoryBlock* pNextMemoryBlock = i_pMemoryBlock->pNextBlock;
 	if(pNextMemoryBlock->pNextBlock != nullptr)
@@ -220,7 +220,7 @@ MemoryBlock* HeapManager::CoalesceWithNextBlock(MemoryBlock* i_pMemoryBlock)
 	return nullptr;
 }
 
-bool HeapManager::CheckAddressWithinHeap(uintptr_t i_AddressToCheck)
+bool LinkedListAllocator::CheckAddressWithinHeap(uintptr_t i_AddressToCheck)
 {
 	//std::cout << "CheckAddressWithinHeap: " << std::hex << i_AddressToCheck << std::dec << std::endl;
 
@@ -231,12 +231,12 @@ bool HeapManager::CheckAddressWithinHeap(uintptr_t i_AddressToCheck)
 	return false;
 }
 
-void* HeapManager::Alloc(size_t i_size)
+void* LinkedListAllocator::Alloc(size_t i_size)
 {
 	return Alloc(i_size, MemoryAlignmentHelper::sDefaultAlignment);
 }
 
-void* HeapManager::Alloc(size_t i_size, size_t i_align)
+void* LinkedListAllocator::Alloc(size_t i_size, size_t i_align)
 {
 	MemoryBlock* pAvailableBlock = FindFirstFit(i_size, i_align);
 
@@ -280,7 +280,7 @@ void* HeapManager::Alloc(size_t i_size, size_t i_align)
 	return reinterpret_cast<void*>(pNewMemoryBlock->pBaseAddress);
 }
 
-void HeapManager::Collect()
+void LinkedListAllocator::Collect()
 {
 	MemoryBlock* IteratorBlock = pHead->pNextBlock;
 	while (IteratorBlock)
@@ -301,7 +301,7 @@ void HeapManager::Collect()
 	}
 }
 
-bool HeapManager::Contains(void* i_pMemory) const
+bool LinkedListAllocator::Contains(void* i_pMemory) const
 {
 	MemoryBlock* IteratorBlock = pTail;
 	while ((nullptr != IteratorBlock))
@@ -315,7 +315,7 @@ bool HeapManager::Contains(void* i_pMemory) const
 	return false;
 }
 
-bool HeapManager::IsAllocated(void* i_pMemory) const
+bool LinkedListAllocator::IsAllocated(void* i_pMemory) const
 {
 	if (i_pMemory == nullptr)
 	{
@@ -329,17 +329,17 @@ bool HeapManager::IsAllocated(void* i_pMemory) const
 	return MemoryBlockToCheck->bIsAllocated;
 }
 
-size_t HeapManager::GetLargestFreeBlock() const
+size_t LinkedListAllocator::GetLargestFreeBlock() const
 {
 	return 0;
 }
 
-size_t HeapManager::GetTotalFreeMemory() const
+size_t LinkedListAllocator::GetTotalFreeMemory() const
 {	
 	return 0;
 }
 
-void HeapManager::ShowFreeBlocks() const
+void LinkedListAllocator::ShowFreeBlocks() const
 {
 	std::cout << "================		START	Free Blocks		================" << std::endl;
 	MemoryBlock* IteratorBlock = pHead;
@@ -362,7 +362,7 @@ void HeapManager::ShowFreeBlocks() const
 	std::cout << "================		END		Free Blocks		================" << std::endl << std::endl;
 }
 
-void HeapManager::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
+void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 {
 	assert(i_pMemoryBlock);
 	const char separator = ' ';
@@ -383,7 +383,7 @@ void HeapManager::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 	std::cout << std::endl;
 }
 
-void HeapManager::ShowOutstandingAllocations() const
+void LinkedListAllocator::ShowOutstandingAllocations() const
 {
 	std::cout << "================		START	Outstanding Allocations		================" << std::endl;
 	MemoryBlock* IteratorBlock = pHead;
@@ -406,7 +406,7 @@ void HeapManager::ShowOutstandingAllocations() const
 	std::cout << "================		END		Outstanding Allocations		================" << std::endl << std::endl;
 }
 
-bool HeapManager::Free(void* i_pMemory)
+bool LinkedListAllocator::Free(void* i_pMemory)
 {
 	if(i_pMemory == nullptr)
 	{
