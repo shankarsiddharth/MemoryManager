@@ -5,6 +5,7 @@
 #include <Windows.h>
 
 #include "BitArray.h"
+#include "FixedSizeAllocator.h"
 
 int main(int i_arg, char**)
 {
@@ -35,7 +36,9 @@ int main(int i_arg, char**)
 
 	//TestCases
 	uintptr_t endAddress = reinterpret_cast<uintptr_t>(pHeapMemory) + sizeHeap;
-	BitArray* newBitArray = BitArray::Create(reinterpret_cast<void*>(endAddress), 400);
+	FixedSizeAllocator* fixed_size_allocator = FixedSizeAllocator::Create(pHeapMemory, sizeHeap, 16, 8);
+
+
 
 	if (pHeapMemory)
 	{
