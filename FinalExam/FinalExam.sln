@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FinalExam", "FinalExam.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FixedSizeAllocator", "FixedSizeAllocator\FixedSizeAllocator.vcxproj", "{916A5AE0-C7AE-4642-A2B3-A525C41D5C09}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BitArray", "BitArray\BitArray.vcxproj", "{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,14 +31,6 @@ Global
 		{916A5AE0-C7AE-4642-A2B3-A525C41D5C09}.Release|x64.Build.0 = Release|x64
 		{916A5AE0-C7AE-4642-A2B3-A525C41D5C09}.Release|x86.ActiveCfg = Release|Win32
 		{916A5AE0-C7AE-4642-A2B3-A525C41D5C09}.Release|x86.Build.0 = Release|Win32
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Debug|x64.ActiveCfg = Debug|x64
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Debug|x64.Build.0 = Debug|x64
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Debug|x86.ActiveCfg = Debug|Win32
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Debug|x86.Build.0 = Debug|Win32
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Release|x64.ActiveCfg = Release|x64
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Release|x64.Build.0 = Release|x64
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Release|x86.ActiveCfg = Release|Win32
-		{96F88D39-57E9-45A3-A2B5-C1C18F63C55A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
