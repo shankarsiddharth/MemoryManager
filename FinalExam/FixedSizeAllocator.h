@@ -1,8 +1,10 @@
 #pragma once
 #include <cstdint>
 
-#include "BitArray.h"
+
 #include "FSAData.h"
+
+class BitArray;
 
 class FixedSizeAllocator
 {
