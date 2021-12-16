@@ -1,9 +1,9 @@
 //TODO: Add Debug Information
 #define DEBUG_SHOW_MEMORY_INFORMATION
-#define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
-#define DEBUG_CLEAR_MEMORY_ON_DESTROY
+//#define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
+//#define DEBUG_CLEAR_MEMORY_ON_DESTROY
 //#define DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
-#define _ITERATOR_DEBUG_LEVEL 0
+#define _ITERATOR_DEBUG_LEVEL 1
 
 #include "LinkedListAllocator.h"
 #include <Windows.h>
@@ -18,6 +18,7 @@
 #include "MemoryAlignmentHelper.h"
 
 uintptr_t LinkedListAllocator::sBaseAddressOfLinkedListAllocator = 0;
+bool LinkedListAllocator::bIsVirtualMemoryAllocated = false;
 
 LinkedListAllocator* LinkedListAllocator::Get()
 {
@@ -61,6 +62,7 @@ LinkedListAllocator* LinkedListAllocator::Create(size_t i_bytes, unsigned int i_
 
 	void* pMemoryAddress = VirtualAlloc(NULL, sizeHeapInPageMultiples, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	assert(pMemoryAddress);
+	bIsVirtualMemoryAllocated = true;
 	
 #ifdef DEBUG_SHOW_MEMORY_INFORMATION
 	void* pDebugMemoryStart = pMemoryAddress;
@@ -93,7 +95,10 @@ void LinkedListAllocator::Destroy()
 		pMemoryAddressStart = static_cast<char*>(pMemoryAddressStart) + 1;
 	}
 #endif
-	//VirtualFree(reinterpret_cast<void*>(pRoot), 0, MEM_RELEASE);
+	if(bIsVirtualMemoryAllocated)
+	{
+		VirtualFree(reinterpret_cast<void*>(pRoot), 0, MEM_RELEASE);
+	}	
 }
 
 LinkedListAllocator* LinkedListAllocator::Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors)

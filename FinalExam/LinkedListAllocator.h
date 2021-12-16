@@ -26,6 +26,7 @@ public:
 
 private:
 	static uintptr_t sBaseAddressOfLinkedListAllocator;
+	static bool bIsVirtualMemoryAllocated;
 
 	LinkedListAllocator* Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors);
 	static inline size_t GetSizeRequiredForANewBlock(size_t i_size, size_t i_align);
