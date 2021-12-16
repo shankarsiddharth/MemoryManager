@@ -23,7 +23,7 @@ FixedSizeAllocator* FixedSizeAllocator::Create(void* i_pBaseAddressOfAvailableMe
 	//Make sure the rootAddress is within the available memory range
 	//If assert fails increase the available memory
 	bool isValidRootAddress = (rootAddress >= startAddressOfAvailableMemory) && (rootAddress < endAddressOfAvailableMemory);
-	assert(isValidRootAddress);
+	assert(isValidRootAddress && "If assert fails increase the available memory for Heap");
 
 	FixedSizeAllocator* fixedSizeAllocator = reinterpret_cast<FixedSizeAllocator*>(rootAddress);
 	assert(fixedSizeAllocator);
