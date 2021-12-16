@@ -53,11 +53,7 @@ FixedSizeAllocator* FixedSizeAllocator::Initialize(uintptr_t i_rootAddress, size
 void FixedSizeAllocator::Destroy()
 {
 #ifdef _DEBUG
-	if(!pFSABitArray->AreAllBitsClear())
-	{
-		printf("Outstanding Allocations for FSA of Size: %zu\n", FSAInfoData.sizeOfBlock);
-		pFSABitArray->Display();
-	}
+	ShowOutstandingAllocations();
 #endif
 }
 
@@ -116,4 +112,19 @@ FSAData FixedSizeAllocator::GetFSAData() const
 size_t FixedSizeAllocator::GetRequiredSizeForFixedSizeMemoryBlocks(size_t i_sizeOfBlock, size_t i_numberOfBlocks)
 {
 	return i_sizeOfBlock * i_numberOfBlocks;
+}
+
+void FixedSizeAllocator::ShowFreeBlocks() const
+{
+	printf("FreeBlock BitArray Data for FSA of Size: %zu\n", FSAInfoData.sizeOfBlock);
+	pFSABitArray->Display();
+}
+
+void FixedSizeAllocator::ShowOutstandingAllocations() const
+{
+	if (!pFSABitArray->AreAllBitsClear())
+	{
+		printf("Outstanding Allocations for FSA of Size: %zu\n", FSAInfoData.sizeOfBlock);
+		pFSABitArray->Display();
+	}
 }

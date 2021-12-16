@@ -23,6 +23,9 @@ public:
 
 	static size_t GetRequiredSizeForFixedSizeMemoryBlocks(size_t i_sizeOfBlock, size_t i_numberOfBlocks);
 
+	void ShowFreeBlocks() const;
+	void ShowOutstandingAllocations() const;
+
 private:
 	uintptr_t pRoot = 0;
 	size_t totalSize = 0;

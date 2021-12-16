@@ -17,6 +17,9 @@ public:
 	void Free(void* i_pMemory);
 	void Collect();
 	bool Contains(void* i_pMemory) const;
+
+	void ShowFreeBlocks() const;
+	void ShowOutstandingAllocations() const;
 	
 private:
 	static uintptr_t sBaseAddressOfHeapManager;
