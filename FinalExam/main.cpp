@@ -1,6 +1,3 @@
-#define USE_HEAP_ALLOC
-#define _ITERATOR_DEBUG_LEVEL 0
-
 #include <Windows.h>
 
 #include "MemorySystem.h"
@@ -17,7 +14,7 @@
 
 bool MemorySystem_UnitTest();
 
-int main(int i_arg, char **)
+int main(int i_arg, char**)
 {
 	const size_t 		sizeHeap = 1024 * 1024;
 
@@ -25,7 +22,7 @@ int main(int i_arg, char **)
 	const unsigned int 	numDescriptors = 2048;
 
 	// Allocate memory for my test heap.
-	void * pHeapMemory = HeapAlloc(GetProcessHeap(), 0, sizeHeap);
+	void* pHeapMemory = HeapAlloc(GetProcessHeap(), 0, sizeHeap);
 	assert(pHeapMemory);
 
 	// Create your HeapManager and FixedSizeAllocators.
@@ -50,7 +47,7 @@ int main(int i_arg, char **)
 bool MemorySystem_UnitTest()
 {
 	const size_t maxAllocations = 10 * 1024;
-	std::vector<void *> AllocatedAddresses;
+	std::vector<void*> AllocatedAddresses;
 
 	long	numAllocs = 0;
 	long	numFrees = 0;
@@ -70,7 +67,7 @@ bool MemorySystem_UnitTest()
 
 		size_t			sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
 
-		void * pPtr = malloc(sizeAlloc);
+		void* pPtr = malloc(sizeAlloc);
 
 		// if allocation failed see if garbage collecting will create a large enough block
 		if (pPtr == nullptr)
@@ -95,7 +92,7 @@ bool MemorySystem_UnitTest()
 
 		if (!AllocatedAddresses.empty() && ((rand() % freeAboutEvery) == 0))
 		{
-			void * pPtrToFree = AllocatedAddresses.back();
+			void* pPtrToFree = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 
 			free(pPtrToFree);
@@ -119,7 +116,7 @@ bool MemorySystem_UnitTest()
 		// return them back to the heap manager
 		while (!AllocatedAddresses.empty())
 		{
-			void * pPtrToFree = AllocatedAddresses.back();
+			void* pPtrToFree = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 
 			delete[] pPtrToFree;
@@ -130,7 +127,7 @@ bool MemorySystem_UnitTest()
 		// our heap should be one single block, all the memory it started with
 
 		// do a large test allocation to see if garbage collection worked
-		void * pPtr = malloc(totalAllocated / 2);
+		void* pPtr = malloc(totalAllocated / 2);
 
 		if (pPtr)
 		{
@@ -148,8 +145,8 @@ bool MemorySystem_UnitTest()
 	}
 
 	// this new [] / delete [] pair should run through your allocator
-	char * pNewTest = new char[1024];
-	
+	char* pNewTest = new char[1024];
+
 	delete[] pNewTest;
 
 	// we succeeded

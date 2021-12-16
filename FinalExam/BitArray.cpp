@@ -167,7 +167,7 @@ size_t BitArray::GetRequiredSizeForObject(void* i_pBaseAddressOfAvailableMemory,
 	//Make sure the rootAddress is within the available memory range
 	//If assert fails increase the available memory
 	bool isValidRootAddress = (rootAddress > reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory)) && (rootAddress < endAddressOfAvailableMemory);
-	assert(isValidRootAddress);
+	assert(isValidRootAddress && "If assert fails increase the available memory for Heap");
 
 	return endAddressOfAvailableMemory - rootAddress;
 }
