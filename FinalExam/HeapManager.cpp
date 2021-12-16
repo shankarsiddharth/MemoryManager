@@ -1,5 +1,5 @@
 //TODO: Move Debug Definitions to a single file
-#define DEBUG_CLEAR_MEMORY_ON_DESTROY
+//#define DEBUG_CLEAR_MEMORY_ON_DESTROY
 
 #include "HeapManager.h"
 
