@@ -9,7 +9,7 @@ class LinkedListAllocator
 {
 public:
 	static LinkedListAllocator* Get();
-	static LinkedListAllocator* Create(void* i_pHeapMemory, size_t i_bytes, unsigned int i_numDescriptors);
+	static LinkedListAllocator* Create(void* i_pMemoryAddress, size_t i_bytes, unsigned int i_numDescriptors);
 	static LinkedListAllocator* Create(size_t i_bytes, unsigned int i_numDescriptors);
 	void Destroy();
 
@@ -25,10 +25,9 @@ public:
 	void ShowOutstandingAllocations() const;
 
 private:
-	static uintptr_t sBaseAddressOfHeapManager;
+	static uintptr_t sBaseAddressOfLinkedListAllocator;
 
 	LinkedListAllocator* Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors);
-	//LinkedListAllocator* Initialize(size_t i_Bytes);
 	static inline size_t GetSizeRequiredForANewBlock(size_t i_size, size_t i_align);
 	MemoryBlock* FindFirstFit(size_t i_size, size_t i_align) const;
 	void DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const;
@@ -42,5 +41,5 @@ private:
 	uintptr_t pRoot = 0;
 	MemoryBlock* pHead = nullptr;
 	MemoryBlock* pTail = nullptr;
-	size_t totalHeapSize = 0;
+	size_t totalSizeOfLinkedListAllocator = 0;
 };
