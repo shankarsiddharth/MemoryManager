@@ -1,4 +1,7 @@
 #include "FixedSizeAllocator.h"
+
+#include <cstdio>
+
 #include "MemoryAlignmentHelper.h"
 #include "BitArray.h"
 
@@ -49,7 +52,13 @@ FixedSizeAllocator* FixedSizeAllocator::Initialize(uintptr_t i_rootAddress, size
 
 void FixedSizeAllocator::Destroy()
 {
-	//TODO: Detect outstanding allocation and print debug information in debug mode
+#ifdef _DEBUG
+	if(!pFSABitArray->AreAllBitsClear())
+	{
+		printf("Outstanding Allocations for FSA of Size: %zu\n", FSAInfoData.sizeOfBlock);
+		pFSABitArray->Display();
+	}
+#endif
 }
 
 void* FixedSizeAllocator::Alloc()
