@@ -1,5 +1,6 @@
 #include "FixedSizeAllocator.h"
 #include "MemoryAlignmentHelper.h"
+#include "BitArray.h"
 
 FixedSizeAllocator* FixedSizeAllocator::Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemoryMemory, size_t i_sizeOfBlock, size_t i_numberOfBlocks)
 {
@@ -48,6 +49,7 @@ FixedSizeAllocator* FixedSizeAllocator::Initialize(uintptr_t i_rootAddress, size
 
 void FixedSizeAllocator::Destroy()
 {
+	//TODO: Detect outstanding allocation and print debug information in debug mode
 }
 
 void* FixedSizeAllocator::Alloc()
