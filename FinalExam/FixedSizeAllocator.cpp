@@ -103,12 +103,7 @@ bool FixedSizeAllocator::Contains(void* i_pMemory) const
 		if(differenceInMemoryAddress % FSAInfoData.sizeOfBlock == 0)
 		{
 			return true;
-		}/*
-		if(memoryAddressToCheck % MemoryAlignmentHelper::sDefaultAlignment == 0)
-		{
-			return true;
-		}*/
-		//return true;
+		}
 	}
 	return false;
 }
