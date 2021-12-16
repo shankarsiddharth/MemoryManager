@@ -23,6 +23,7 @@ private:
 
 	HeapManager* Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors, const FSAData* i_FSAData, const size_t i_numFSAs);
 	FixedSizeAllocator* FindFixedSizeAllocator(size_t i_size);
+	static bool IsAddressWithinAvailableMemoryRange(void* i_pMemory, size_t i_bytes, void* i_AddressToCheck);
 
 	uintptr_t pRoot = 0;
 	size_t totalSizeOfHeapManager = 0;

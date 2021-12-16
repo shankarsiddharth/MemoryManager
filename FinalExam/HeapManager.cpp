@@ -37,8 +37,6 @@ HeapManager* HeapManager::Create(void* i_pMemory, size_t i_bytes, unsigned int i
 
 HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i_numDescriptors, const FSAData* i_FSAData, const size_t i_numFSAs)
 {
-	//TODO: Check for i_FSAData == nullptr, i_numFSAs == 0 & allocate accordingly
-	//TODO: Check Memory Address is within range of available address / info to increase the memory size of the Heap
 	pRoot = reinterpret_cast<uintptr_t>(i_pMemory);
 	sBaseAddressOfHeapManager = pRoot;
 	totalSizeOfHeapManager = i_bytes;
@@ -55,14 +53,15 @@ HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i
 		FSAData FSAInfoData = i_FSAData[index];
 		FixedSizeAllocator* FSA = FixedSizeAllocator::Create(reinterpret_cast<void*>(startAddressOfAllocators), availableSizeForAllocators, FSAInfoData.sizeOfBlock, FSAInfoData.numberOfBlocks);
 		uintptr_t addressOfFSA = reinterpret_cast<uintptr_t>(FSA);
+		assert(IsAddressWithinAvailableMemoryRange(i_pMemory, i_bytes, reinterpret_cast<void*>(addressOfFSA)));
 		uintptr_t* pFixedSizeAllocatorBaseAddressArrayPointer = reinterpret_cast<uintptr_t*>(&pFixedSizeAllocatorBaseAddressArray + index);
 		*(pFixedSizeAllocatorBaseAddressArrayPointer) = reinterpret_cast<uintptr_t>(FSA);
 		availableSizeForAllocators = addressOfFSA - startAddressOfAllocators;
 	}
 
-	//TODO: Initialize the pLinkedListAllocatorBaseAddress
 	LinkedListAllocator* pLinkedListAllocator = LinkedListAllocator::Create(reinterpret_cast<void*>(startAddressOfAllocators), availableSizeForAllocators, i_numDescriptors);
 	pLinkedListAllocatorBaseAddress = reinterpret_cast<uintptr_t>(pLinkedListAllocator);
+	assert(IsAddressWithinAvailableMemoryRange(i_pMemory, i_bytes, reinterpret_cast<void*>(pLinkedListAllocator)));
 
 	return reinterpret_cast<HeapManager*>(pRoot);
 }
@@ -125,7 +124,7 @@ void HeapManager::Free(void* i_pMemory)
 	{
 		return;
 	}
-	//assert(Contains(i_pMemory));
+	assert(Contains(i_pMemory));
 
 	if (pFixedSizeAllocatorBaseAddressArray != nullptr)
 	{
@@ -186,4 +185,16 @@ FixedSizeAllocator* HeapManager::FindFixedSizeAllocator(size_t i_size)
 		}
 	}
 	return nullptr;
+}
+
+bool HeapManager::IsAddressWithinAvailableMemoryRange(void* i_pMemory, size_t i_bytes, void* i_AddressToCheck)
+{
+	assert(i_pMemory);
+	assert(i_bytes);
+	assert(i_AddressToCheck);
+	uintptr_t startAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pMemory);
+	uintptr_t endAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pMemory) + i_bytes;
+	uintptr_t addressToCheck = reinterpret_cast<uintptr_t>(i_AddressToCheck);
+	bool IsAddressWithinMemory = ((addressToCheck >= startAddressOfAvailableMemory) && (addressToCheck < endAddressOfAvailableMemory));
+	return IsAddressWithinMemory;
 }
