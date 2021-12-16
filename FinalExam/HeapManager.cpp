@@ -53,7 +53,9 @@ HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i
 		FSAData FSAInfoData = i_FSAData[index];
 		FixedSizeAllocator* FSA = FixedSizeAllocator::Create(reinterpret_cast<void*>(startAddressOfAllocators), availableSizeForAllocators, FSAInfoData.sizeOfBlock, FSAInfoData.numberOfBlocks);
 		uintptr_t addressOfFSA = reinterpret_cast<uintptr_t>(FSA);
-		assert(IsAddressWithinAvailableMemoryRange(i_pMemory, i_bytes, reinterpret_cast<void*>(addressOfFSA)));
+		//Make sure the rootAddress is within the available memory range
+		//If assert fails increase the available memory
+		assert(IsAddressWithinAvailableMemoryRange(i_pMemory, i_bytes, reinterpret_cast<void*>(addressOfFSA)) && "If assert fails increase the available memory for Heap");
 		uintptr_t* pFixedSizeAllocatorBaseAddressArrayPointer = reinterpret_cast<uintptr_t*>(&pFixedSizeAllocatorBaseAddressArray + index);
 		*(pFixedSizeAllocatorBaseAddressArrayPointer) = reinterpret_cast<uintptr_t>(FSA);
 		availableSizeForAllocators = addressOfFSA - startAddressOfAllocators;
@@ -61,7 +63,9 @@ HeapManager* HeapManager::Initialize(void* i_pMemory, size_t i_bytes, unsigned i
 
 	LinkedListAllocator* pLinkedListAllocator = LinkedListAllocator::Create(reinterpret_cast<void*>(startAddressOfAllocators), availableSizeForAllocators, i_numDescriptors);
 	pLinkedListAllocatorBaseAddress = reinterpret_cast<uintptr_t>(pLinkedListAllocator);
-	assert(IsAddressWithinAvailableMemoryRange(i_pMemory, i_bytes, reinterpret_cast<void*>(pLinkedListAllocator)));
+	//Make sure the rootAddress is within the available memory range
+	//If assert fails increase the available memory
+	assert(IsAddressWithinAvailableMemoryRange(i_pMemory, i_bytes, reinterpret_cast<void*>(pLinkedListAllocator)) && "If assert fails increase the available memory for Heap");
 
 	return reinterpret_cast<HeapManager*>(pRoot);
 }
