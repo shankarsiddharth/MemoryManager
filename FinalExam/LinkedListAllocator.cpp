@@ -1,14 +1,14 @@
 #define DEBUG_SHOW_MEMORY_INFORMATION
 //#define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
 //#define DEBUG_CLEAR_MEMORY_ON_DESTROY
-//#define DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+//#define DEBUG_USE_IOSTREAM_FOR_DISPLAY
 
 #include "LinkedListAllocator.h"
 #include <Windows.h>
 
 #include <cstdio>
 
-#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 #include <iostream>
 #include <iomanip>
 #endif
@@ -180,7 +180,7 @@ MemoryBlock* LinkedListAllocator::FindFirstFit(size_t i_size, size_t i_align) co
 
 void LinkedListAllocator::PrintDisplayHeading() const
 {
-#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	const char separator = ' ';
 	std::cout << " | ";
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << "MemoryBlockAt" << " | ";
@@ -356,7 +356,7 @@ size_t LinkedListAllocator::GetTotalFreeMemory() const
 
 void LinkedListAllocator::ShowFreeBlocks() const
 {
-#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << "================		START	Free Blocks		================" << std::endl;
 	MemoryBlock* IteratorBlock = pHead;
 
@@ -381,7 +381,7 @@ void LinkedListAllocator::ShowFreeBlocks() const
 
 void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 {
-#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	assert(i_pMemoryBlock);
 	const char separator = ' ';
 	uintptr_t MemoryBlockAddress = reinterpret_cast<uintptr_t>(i_pMemoryBlock);
@@ -404,7 +404,7 @@ void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 
 void LinkedListAllocator::ShowOutstandingAllocations() const
 {
-#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << "================		START	Outstanding Allocations		================" << std::endl;
 	MemoryBlock* IteratorBlock = pHead;
 
@@ -442,6 +442,8 @@ bool LinkedListAllocator::Free(void* i_pMemory)
 	MemoryBlockToFree->bIsAllocated = false;
 	uintptr_t AvailableBytes = reinterpret_cast<uintptr_t>(MemoryBlockToFree->pNextBlock) - MemoryBlockToFree->pBaseAddress;
 	MemoryBlockToFree->BlockSize = AvailableBytes;
+
+	Collect();
 
 	return true;
 }
