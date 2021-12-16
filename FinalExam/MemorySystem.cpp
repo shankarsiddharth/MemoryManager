@@ -1,10 +1,12 @@
 #include "MemorySystem.h"
-#include "LinkedListAllocator.h"
+#include "HeapManager.h"
+#include "FSAData.h"
 
-bool InitializeMemorySystem(void * i_pHeapMemory, size_t i_sizeHeapMemory, unsigned int i_OptionalNumDescriptors)
+bool InitializeMemorySystem(void* i_pHeapMemory, size_t i_sizeHeapMemory, unsigned int i_OptionalNumDescriptors)
 {
 	// create your HeapManager and FixedSizeAllocators
-	LinkedListAllocator::Create(i_pHeapMemory, i_sizeHeapMemory, i_OptionalNumDescriptors);
+	FSAData FSAInfoData[] = { {96,400}, {32, 200}, {16, 100} };
+	HeapManager::Create(i_pHeapMemory, i_sizeHeapMemory, i_OptionalNumDescriptors, FSAInfoData, sizeof(FSAInfoData)/sizeof(FSAData));
 	return true;
 }
 
@@ -12,22 +14,12 @@ void Collect()
 {
 	// coalesce free blocks
 	// you may or may not need to do this depending on how you've implemented your HeapManager
-	LinkedListAllocator::Get()->Collect();
+	HeapManager::Get()->Collect();
+
 }
 
 void DestroyMemorySystem()
 {
 	// Destroy your LinkedListAllocator and FixedSizeAllocators
-	LinkedListAllocator::Get()->Destroy();
+	HeapManager::Get()->Destroy();
 }
-
-void DisplayFreeBlocks()
-{
-	LinkedListAllocator::Get()->ShowFreeBlocks();
-}
-
-void DisplayOutstandingBlocks()
-{
-	LinkedListAllocator::Get()->ShowOutstandingAllocations();
-}
-
