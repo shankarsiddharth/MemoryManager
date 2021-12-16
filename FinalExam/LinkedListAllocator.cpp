@@ -1,32 +1,39 @@
+//TODO: Add Debug Information
 #define DEBUG_SHOW_MEMORY_INFORMATION
 #define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
+#define DEBUG_CLEAR_MEMORY_ON_DESTROY
+//#define DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
+#define _ITERATOR_DEBUG_LEVEL 0
 
 #include "LinkedListAllocator.h"
 #include <Windows.h>
 
 #include <cstdio>
+
+#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
 #include <iostream>
 #include <iomanip>
+#endif
 
 #include "MemoryAlignmentHelper.h"
 
-uintptr_t LinkedListAllocator::sBaseAddressOfHeapManager = 0;
+uintptr_t LinkedListAllocator::sBaseAddressOfLinkedListAllocator = 0;
 
 LinkedListAllocator* LinkedListAllocator::Get()
 {
-	assert(sBaseAddressOfHeapManager != 0);
-	return reinterpret_cast<LinkedListAllocator*>(sBaseAddressOfHeapManager);
+	assert(sBaseAddressOfLinkedListAllocator != 0);
+	return reinterpret_cast<LinkedListAllocator*>(sBaseAddressOfLinkedListAllocator);
 }
 
-LinkedListAllocator* LinkedListAllocator::Create(void* i_pHeapMemory, size_t i_bytes, unsigned i_numDescriptors)
+LinkedListAllocator* LinkedListAllocator::Create(void* i_pMemoryAddress, size_t i_bytes, unsigned i_numDescriptors)
 {
 #ifdef DEBUG_SHOW_MEMORY_INFORMATION
-	void* pDebugMemoryStart = i_pHeapMemory;
-	printf("========================================HEAP MANAGER=======================================\n");
-	printf("pHeapManager Start Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart));
-	//printf("pHeapManager End Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart) + i_bytes);
+	void* pDebugMemoryStart = i_pMemoryAddress;
+	printf("========================================LINKEDLIST ALLOCATOR=======================================\n");
+	printf("pLinkedListAllocator Start Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart));
+	//printf("pLinkedListAllocator End Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart) + i_bytes);
 	printf("Total Size of Heap: %zu bytes\n", i_bytes);
-	printf("===========================================================================================\n");
+	printf("===================================================================================================\n");
 	/*for (size_t index = 0; index < i_bytes; index++)
 	{
 		*static_cast<char*>(pDebugMemoryStart) = '~';
@@ -34,10 +41,10 @@ LinkedListAllocator* LinkedListAllocator::Create(void* i_pHeapMemory, size_t i_b
 	}*/
 #endif
 
-	auto pHeapManager = static_cast<LinkedListAllocator*>(i_pHeapMemory);
-	assert(pHeapManager);
+	auto pLinkedListAllocator = static_cast<LinkedListAllocator*>(i_pMemoryAddress);
+	assert(pLinkedListAllocator);
 
-	return pHeapManager->Initialize(i_pHeapMemory, i_bytes, i_numDescriptors);
+	return pLinkedListAllocator->Initialize(i_pMemoryAddress, i_bytes, i_numDescriptors);
 }
 
 LinkedListAllocator* LinkedListAllocator::Create(size_t i_bytes, unsigned int i_numDescriptors)
@@ -52,14 +59,14 @@ LinkedListAllocator* LinkedListAllocator::Create(size_t i_bytes, unsigned int i_
 	const size_t sizeHeapInPageMultiples = SysInfo.dwPageSize * ((i_bytes + SysInfo.dwPageSize) / SysInfo.dwPageSize);
 	assert((sizeHeapInPageMultiples) > sizeof(LinkedListAllocator));
 
-	void* pHeapMemory = VirtualAlloc(NULL, sizeHeapInPageMultiples, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-	assert(pHeapMemory);
+	void* pMemoryAddress = VirtualAlloc(NULL, sizeHeapInPageMultiples, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	assert(pMemoryAddress);
 	
 #ifdef DEBUG_SHOW_MEMORY_INFORMATION
-	void* pDebugMemoryStart = pHeapMemory;
-	printf("========================================HEAP MANAGER=======================================\n");
-	printf("pHeapManager Start Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart));
-	//printf("pHeapManager End Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart) + i_bytes);
+	void* pDebugMemoryStart = pMemoryAddress;
+	printf("========================================LINKEDLIST ALLOCATOR=======================================\n");
+	printf("pLinkedListAllocator Start Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart));
+	//printf("pLinkedListAllocator End Address: %zX\n", reinterpret_cast<uintptr_t>(pDebugMemoryStart) + i_bytes);
 	printf("Total Size of Heap: %zu bytes\n", i_bytes);
 	printf("===========================================================================================\n");
 	/*for (size_t index = 0; index < i_bytes; index++)
@@ -69,33 +76,36 @@ LinkedListAllocator* LinkedListAllocator::Create(size_t i_bytes, unsigned int i_
 	}*/
 #endif
 
-	auto pHeapManager = static_cast<LinkedListAllocator*>(pHeapMemory);
-	assert(pHeapManager);
+	auto pLinkedListAllocator = static_cast<LinkedListAllocator*>(pMemoryAddress);
+	assert(pLinkedListAllocator);
 
-	return pHeapManager->Initialize(pHeapMemory, i_bytes, i_numDescriptors);
+	return pLinkedListAllocator->Initialize(pMemoryAddress, i_bytes, i_numDescriptors);
 }
 
 void LinkedListAllocator::Destroy()
 {
-	void* pHeapMemoryStart = reinterpret_cast<void*>(pRoot);
-	const size_t totalSize = totalHeapSize;
+#ifdef DEBUG_CLEAR_MEMORY_ON_DESTROY
+	void* pMemoryAddressStart = reinterpret_cast<void*>(pRoot);
+	const size_t totalSize = totalSizeOfLinkedListAllocator;
 	for(size_t index = 0; index < totalSize; index++)
 	{
-		*static_cast<char*>(pHeapMemoryStart) = NULL;
-		pHeapMemoryStart = static_cast<char*>(pHeapMemoryStart) + 1;
+		*static_cast<char*>(pMemoryAddressStart) = NULL;
+		pMemoryAddressStart = static_cast<char*>(pMemoryAddressStart) + 1;
 	}
+#endif
+	//VirtualFree(reinterpret_cast<void*>(pRoot), 0, MEM_RELEASE);
 }
 
 LinkedListAllocator* LinkedListAllocator::Initialize(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors)
 //LinkedListAllocator* LinkedListAllocator::Initialize(size_t i_bytes)
 {
-	sBaseAddressOfHeapManager = reinterpret_cast<uintptr_t>(i_pMemory);
+	sBaseAddressOfLinkedListAllocator = reinterpret_cast<uintptr_t>(i_pMemory);
 
-	//Initialize Heap Manager
+	//Initialize LinkedListAllocator
 	pRoot = reinterpret_cast<uintptr_t>(i_pMemory);
 	pHead = reinterpret_cast<MemoryBlock*>(pRoot + sizeof(LinkedListAllocator));
 	pTail = reinterpret_cast<MemoryBlock*>(pRoot + i_bytes - sizeof(MemoryBlock));
-	totalHeapSize = i_bytes;
+	totalSizeOfLinkedListAllocator = i_bytes;
 
 	//Initialize Head
 	pHead->pBaseAddress = reinterpret_cast<uintptr_t>(pHead);
@@ -167,6 +177,7 @@ MemoryBlock* LinkedListAllocator::FindFirstFit(size_t i_size, size_t i_align) co
 
 void LinkedListAllocator::PrintDisplayHeading() const
 {
+#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
 	const char separator = ' ';
 	std::cout << " | ";
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << "MemoryBlockAt" << " | ";
@@ -182,6 +193,7 @@ void LinkedListAllocator::PrintDisplayHeading() const
 	std::cout << std::left << std::setw(18) << std::setfill(separator) << "NextAddress" << " | ";
 	std::cout << std::left << std::setw(11) << std::setfill(separator) << "IsAllocated" << " | ";*/
 	std::cout << std::endl;
+#endif
 }
 
 bool LinkedListAllocator::canCoalesceWithNextMemoryBlock(MemoryBlock* i_pMemoryBlock)
@@ -224,7 +236,7 @@ bool LinkedListAllocator::CheckAddressWithinHeap(uintptr_t i_AddressToCheck)
 {
 	//std::cout << "CheckAddressWithinHeap: " << std::hex << i_AddressToCheck << std::dec << std::endl;
 
-	if(i_AddressToCheck > pRoot && i_AddressToCheck < (pRoot+totalHeapSize))
+	if(i_AddressToCheck > pRoot && i_AddressToCheck < (pRoot+totalSizeOfLinkedListAllocator))
 	{
 		return true;
 	}
@@ -303,7 +315,8 @@ void LinkedListAllocator::Collect()
 
 bool LinkedListAllocator::Contains(void* i_pMemory) const
 {
-	MemoryBlock* IteratorBlock = pTail;
+	//TODO: Check with pTail->previous
+	MemoryBlock* IteratorBlock = pTail->pPreviousBlock;
 	while ((nullptr != IteratorBlock))
 	{		
 		if (IteratorBlock->pBaseAddress == reinterpret_cast<uintptr_t>(i_pMemory))
@@ -341,6 +354,7 @@ size_t LinkedListAllocator::GetTotalFreeMemory() const
 
 void LinkedListAllocator::ShowFreeBlocks() const
 {
+#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
 	std::cout << "================		START	Free Blocks		================" << std::endl;
 	MemoryBlock* IteratorBlock = pHead;
 
@@ -360,10 +374,12 @@ void LinkedListAllocator::ShowFreeBlocks() const
 		IteratorBlock = IteratorBlock->pNextBlock;
 	}
 	std::cout << "================		END		Free Blocks		================" << std::endl << std::endl;
+#endif
 }
 
 void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 {
+#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
 	assert(i_pMemoryBlock);
 	const char separator = ' ';
 	uintptr_t MemoryBlockAddress = reinterpret_cast<uintptr_t>(i_pMemoryBlock);
@@ -381,10 +397,12 @@ void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << std::hex << std::uppercase << NextAddress << " | " << std::dec;
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << IsBlockAllocated << " | ";
 	std::cout << std::endl;
+#endif
 }
 
 void LinkedListAllocator::ShowOutstandingAllocations() const
 {
+#ifdef DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
 	std::cout << "================		START	Outstanding Allocations		================" << std::endl;
 	MemoryBlock* IteratorBlock = pHead;
 
@@ -404,6 +422,7 @@ void LinkedListAllocator::ShowOutstandingAllocations() const
 		IteratorBlock = IteratorBlock->pNextBlock;
 	}
 	std::cout << "================		END		Outstanding Allocations		================" << std::endl << std::endl;
+#endif
 }
 
 bool LinkedListAllocator::Free(void* i_pMemory)
@@ -412,6 +431,7 @@ bool LinkedListAllocator::Free(void* i_pMemory)
 	{
 		return true;
 	}
+	assert(Contains(i_pMemory));
 
 	const uintptr_t MemoryBlockAddressForUserPointer = reinterpret_cast<uintptr_t>(i_pMemory) - sizeof(MemoryBlock);
 	MemoryBlock* MemoryBlockToFree = reinterpret_cast<MemoryBlock*>(MemoryBlockAddressForUserPointer);
