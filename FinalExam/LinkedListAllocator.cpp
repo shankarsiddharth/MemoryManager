@@ -320,7 +320,6 @@ void LinkedListAllocator::Collect()
 
 bool LinkedListAllocator::Contains(void* i_pMemory) const
 {
-	//TODO: Check with pTail->previous
 	MemoryBlock* IteratorBlock = pTail->pPreviousBlock;
 	while ((nullptr != IteratorBlock))
 	{		
