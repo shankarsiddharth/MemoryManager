@@ -146,17 +146,21 @@
     <ClCompile Include="Allocators.cpp" />
     <ClCompile Include="BitArray.cpp" />
     <ClCompile Include="FixedSizeAllocator.cpp" />
+    <ClCompile Include="HeapManager.cpp" />
     <ClCompile Include="LinkedListAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MemorySystem.cpp" />
+    <ClCompile Include="MemorySystemUnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BitArray.h" />
     <ClInclude Include="FixedSizeAllocator.h" />
     <ClInclude Include="FSAData.h" />
+    <ClInclude Include="HeapManager.h" />
     <ClInclude Include="LinkedListAllocator.h" />
     <ClInclude Include="MemoryAlignmentHelper.h" />
     <ClInclude Include="MemoryBlock.h" />
+    <ClInclude Include="MemoryDebugDefinitions.h" />
     <ClInclude Include="MemorySystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
