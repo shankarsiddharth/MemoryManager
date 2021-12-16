@@ -160,7 +160,6 @@
     <ClInclude Include="LinkedListAllocator.h" />
     <ClInclude Include="MemoryAlignmentHelper.h" />
     <ClInclude Include="MemoryBlock.h" />
-    <ClInclude Include="MemoryDebugDefinitions.h" />
     <ClInclude Include="MemorySystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -3,7 +3,7 @@
 //#define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
 //#define DEBUG_CLEAR_MEMORY_ON_DESTROY
 //#define DEBUG_USE_STD_IO_STREAM_FOR_DISPLAY
-#define _ITERATOR_DEBUG_LEVEL 1
+#define _ITERATOR_DEBUG_LEVEL 0
 
 #include "LinkedListAllocator.h"
 #include <Windows.h>
