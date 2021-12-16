@@ -23,3 +23,13 @@ void DestroyMemorySystem()
 	// Destroy your LinkedListAllocator and FixedSizeAllocators
 	HeapManager::Get()->Destroy();
 }
+
+void ShowFreeBlocks()
+{
+	HeapManager::Get()->ShowFreeBlocks();
+}
+
+void ShowOutstandingBlocks()
+{
+	HeapManager::Get()->ShowOutstandingAllocations();
+}

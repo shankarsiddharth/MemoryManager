@@ -171,6 +171,28 @@ bool HeapManager::Contains(void* i_pMemory) const
 	return pLinkedListAllocator->Contains(i_pMemory);
 }
 
+void HeapManager::ShowFreeBlocks() const
+{
+	for (size_t index = 0; index < sizeOfFixedSizeAllocatorAddressArray; index++)
+	{
+		FixedSizeAllocator* pFSA = reinterpret_cast<FixedSizeAllocator*>(*(&pFixedSizeAllocatorBaseAddressArray + index));
+		pFSA->ShowFreeBlocks();
+	}
+	LinkedListAllocator* pLinkedListAllocator = reinterpret_cast<LinkedListAllocator*>(pLinkedListAllocatorBaseAddress);
+	pLinkedListAllocator->ShowFreeBlocks();
+}
+
+void HeapManager::ShowOutstandingAllocations() const
+{
+	for (size_t index = 0; index < sizeOfFixedSizeAllocatorAddressArray; index++)
+	{
+		FixedSizeAllocator* pFSA = reinterpret_cast<FixedSizeAllocator*>(*(&pFixedSizeAllocatorBaseAddressArray + index));
+		pFSA->ShowOutstandingAllocations();
+	}
+	LinkedListAllocator* pLinkedListAllocator = reinterpret_cast<LinkedListAllocator*>(pLinkedListAllocatorBaseAddress);
+	pLinkedListAllocator->ShowOutstandingAllocations();
+}
+
 
 FixedSizeAllocator* HeapManager::FindFixedSizeAllocator(size_t i_size)
 {
