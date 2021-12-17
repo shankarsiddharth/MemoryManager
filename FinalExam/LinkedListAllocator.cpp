@@ -1,7 +1,9 @@
+#define DEBUG_COLLECT_AFTER_FREE
 #define DEBUG_SHOW_MEMORY_INFORMATION
 //#define DEBUG_CLEAR_MEMORY_AFTER_COLLECT
 //#define DEBUG_CLEAR_MEMORY_ON_DESTROY
 //#define DEBUG_USE_IOSTREAM_FOR_DISPLAY
+#define DEBUG_USE_STDIO_FOR_DISPLAY
 
 #include "LinkedListAllocator.h"
 #include <Windows.h>
@@ -11,6 +13,10 @@
 #ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 #include <iostream>
 #include <iomanip>
+#endif
+
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+#include <cinttypes>
 #endif
 
 #include "MemoryAlignmentHelper.h"
@@ -140,6 +146,10 @@ LinkedListAllocator* LinkedListAllocator::Initialize(void* i_pMemory, size_t i_b
 	pHead->pNextBlock = pNewMemoryBlock;
 	pTail->pPreviousBlock = pNewMemoryBlock;
 
+#ifdef DEBUG_SHOW_MEMORY_INFORMATION
+	ShowFreeBlocks();
+#endif
+	
 	return reinterpret_cast<LinkedListAllocator*>(pRoot);
 }
 
@@ -196,6 +206,9 @@ void LinkedListAllocator::PrintDisplayHeading() const
 	std::cout << std::left << std::setw(18) << std::setfill(separator) << "NextAddress" << " | ";
 	std::cout << std::left << std::setw(11) << std::setfill(separator) << "IsAllocated" << " | ";*/
 	std::cout << std::endl;
+#endif
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+	
 #endif
 }
 
@@ -358,12 +371,19 @@ void LinkedListAllocator::ShowFreeBlocks() const
 {
 #ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << "================		START	Free Blocks		================" << std::endl;
+#endif
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+	printf("========================================================================== START	Free Blocks ==========================================================================\n");
+#endif
+
 	MemoryBlock* IteratorBlock = pHead;
 
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	if (nullptr != IteratorBlock)
 	{
 		PrintDisplayHeading();
 	}
+#endif
 
 	while ((nullptr != IteratorBlock))
 	{
@@ -375,13 +395,18 @@ void LinkedListAllocator::ShowFreeBlocks() const
 		}
 		IteratorBlock = IteratorBlock->pNextBlock;
 	}
+
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << "================		END		Free Blocks		================" << std::endl << std::endl;
+#endif
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+	printf("============================================================================ END	Free Blocks ============================================================================\n\n");
 #endif
 }
 
 void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 {
-#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
+
 	assert(i_pMemoryBlock);
 	const char separator = ' ';
 	uintptr_t MemoryBlockAddress = reinterpret_cast<uintptr_t>(i_pMemoryBlock);
@@ -390,7 +415,7 @@ void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 	uintptr_t PreviousAddress = reinterpret_cast<uintptr_t>(i_pMemoryBlock->pPreviousBlock);
 	uintptr_t NextAddress = reinterpret_cast<uintptr_t>(i_pMemoryBlock->pNextBlock);
 	bool IsBlockAllocated = i_pMemoryBlock->bIsAllocated;
-
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << " | ";	
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << std::hex << std::uppercase << MemoryBlockAddress << " | " << std::dec;
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << std::hex << std::uppercase << BaseAddress << " | " << std::dec;
@@ -400,18 +425,41 @@ void LinkedListAllocator::DisplayMemoryBlock(MemoryBlock* i_pMemoryBlock) const
 	std::cout << std::left << std::setw(sizeof(size_t)) << std::setfill(separator) << IsBlockAllocated << " | ";
 	std::cout << std::endl;
 #endif
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+	printf(
+		" | MemoryBlockAt: 0x%" PRIXPTR 
+		" | BaseAddress: 0x%" PRIXPTR 
+		" | SizeOfBlock: %10zu | PreviousAddress: 0x%" PRIXPTR
+		" | NextAddress: 0x%" PRIXPTR
+		" | IsFreeBlock: %s |\n"
+		, MemoryBlockAddress
+		, BaseAddress
+		, SizeOfBlock
+		, PreviousAddress
+		, NextAddress
+		, (IsBlockAllocated ? "false" : "true")
+	);
+#endif
 }
 
 void LinkedListAllocator::ShowOutstandingAllocations() const
 {
 #ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << "================		START	Outstanding Allocations		================" << std::endl;
+#endif
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+	printf("==================================================================== START	Outstanding Allocations ====================================================================\n");
+#endif	
+
 	MemoryBlock* IteratorBlock = pHead;
 
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	if (nullptr != IteratorBlock)
 	{
 		PrintDisplayHeading();
-	}	
+	}
+#endif
+	
 
 	while ((nullptr != IteratorBlock))
 	{
@@ -423,7 +471,12 @@ void LinkedListAllocator::ShowOutstandingAllocations() const
 		}
 		IteratorBlock = IteratorBlock->pNextBlock;
 	}
+
+#ifdef DEBUG_USE_IOSTREAM_FOR_DISPLAY
 	std::cout << "================		END		Outstanding Allocations		================" << std::endl << std::endl;
+#endif
+#ifdef DEBUG_USE_STDIO_FOR_DISPLAY
+	printf("==================================================================== END	Outstanding Allocations ====================================================================\n\n");
 #endif
 }
 
@@ -443,7 +496,9 @@ bool LinkedListAllocator::Free(void* i_pMemory)
 	uintptr_t AvailableBytes = reinterpret_cast<uintptr_t>(MemoryBlockToFree->pNextBlock) - MemoryBlockToFree->pBaseAddress;
 	MemoryBlockToFree->BlockSize = AvailableBytes;
 
+#ifdef 	DEBUG_COLLECT_AFTER_FREE
 	Collect();
+#endif
 
 	return true;
 }
