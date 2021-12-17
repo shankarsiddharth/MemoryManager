@@ -10,7 +10,6 @@ public:
 	static size_t GetRequiredArraySizeForBits(size_t i_numBits);
 	static size_t GetRequiredSizeForObject(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits);
 
-
 	size_t GetBitArraySize() const;
 
 	bool AreAllBitsClear() const;
@@ -18,7 +17,6 @@ public:
 
 	bool IsBitSet(size_t i_bitNumber) const;
 	bool IsBitClear(size_t i_bitNumber) const;
-
 
 	bool GetFirstClearBit(size_t& o_firstClearBitIndex) const;
 	bool GetFirstSetBit(size_t& o_firstSetBitIndex) const;
