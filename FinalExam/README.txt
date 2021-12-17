@@ -42,32 +42,32 @@ Final Exam REQUIREMENTS
  * BitArray represents an arbitrary length array of bits using an internal array
    of a native data type optimal for the platform it's built for (32- or 64-bit)
 	   - File: FinalExam\BitArray.h
-	   - Line: 47
+	   - Line: 45
 
 
  * BitArray uses the compiler intrinsics _BitScanForward() and _BitScanForward64() to 
    find the first set bit in a 32- or 64-bit value
 	   - File: FinalExam\BitArray.cpp
-	   - Line: 250
+	   - Line(s): 251 & 253
 
   
  * BitArray includes methods for the following,	
 	
 	** Finding the first set bit or clear bit
 	   - File: FinalExam\BitArray.cpp
-	   - Line(s): 226 & 250
+	   - Line(s): 221 & 245
 	
 	** A query for if a bit is set or not
 	   - File: FinalExam\BitArray.cpp
-	   - Line: 200 & 205
+	   - Line: 195 & 200
 	
 	** Setting or Clearing a given bit
 	   - File: FinalExam\BitArray.cpp
-	   - Line: 210 & 218
+	   - Line: 205 & 213
 	
 	** Setting or Clearing all the bits
 	   - File: FinalExam\BitArray.cpp
-	   - Line(s): 148 & 157
+	   - Line(s): 143 & 152
 	
 	
  *  Created FixedSizeAllocators for the following sizes and number of memory blocks
