@@ -7,9 +7,6 @@ public:
 	static BitArray* Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits, bool i_bInitToZero = true);
 	void Destroy();
 
-	/*BitArray(size_t i_numBits, bool i_bInitToZero = true);
-	~BitArray();*/
-
 	static size_t GetRequiredArraySizeForBits(size_t i_numBits);
 	static size_t GetRequiredSizeForObject(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits);
 
@@ -40,7 +37,6 @@ public:
 	static const size_t sBitsPerElement;
 
 private:
-	//static uintptr_t sBaseAddressOfBitArray;
 
 	BitArray* Initialize(uintptr_t i_rootAddress, uintptr_t i_alignedBaseAddressOfBitData, size_t i_numBits, bool i_bInitToZero = true);
 
