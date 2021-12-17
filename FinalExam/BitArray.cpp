@@ -75,38 +75,6 @@ void BitArray::Destroy()
 {
 }
 
-//BitArray::BitArray(size_t i_numBits, bool i_bInitToZero)
-//	: numBits(i_numBits),
-//	arraySize(i_numBits / sBitsPerElement)
-//{
-//	const size_t extraBits = i_numBits % sBitsPerElement;
-//	if (extraBits != 0)
-//	{
-//		arraySize = (i_numBits / sBitsPerElement) + 1;
-//	}
-//
-//	pBitData = new uintptr_t[arraySize];
-//
-//#ifdef _WIN64
-//	const uintptr_t fillValue = (i_bInitToZero ? static_cast<uintptr_t>(0) : UINT64_MAX);
-//#else
-//	const uintptr_t fillValue = (i_bInitToZero ? static_cast<uintptr_t>(0) : UINT32_MAX);
-//#endif
-//
-//	for (size_t sizeIndex = 0; sizeIndex < arraySize; sizeIndex++)
-//	{
-//		pBitData[sizeIndex] = fillValue;
-//	}
-//}
-//
-//BitArray::~BitArray()
-//{
-//	if(pBitData)
-//	{
-//		delete[] pBitData;
-//	}
-//}
-
 void BitArray::Display()
 {
 #ifdef DEBUG_BIT_ARRAY_BITS
