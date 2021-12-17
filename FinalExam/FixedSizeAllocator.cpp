@@ -117,7 +117,14 @@ size_t FixedSizeAllocator::GetRequiredSizeForFixedSizeMemoryBlocks(size_t i_size
 void FixedSizeAllocator::ShowFreeBlocks() const
 {
 	printf("FreeBlock BitArray Data for FSA of Size: %zu\n", FSAInfoData.sizeOfBlock);
-	pFSABitArray->Display();
+	if(!pFSABitArray->AreAllBitsClear())
+	{
+		pFSABitArray->Display();
+	}
+	else
+	{
+		printf("All Blocks are free");
+	}
 }
 
 void FixedSizeAllocator::ShowOutstandingAllocations() const
