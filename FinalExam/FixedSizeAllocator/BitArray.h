@@ -10,7 +10,7 @@ public:
 	/*BitArray(size_t i_numBits, bool i_bInitToZero = true);
 	~BitArray();*/
 
-	static size_t GetRequiredArraySizeForBits(size_t i_numBits);
+	static size_t GetRequiredPlatformWordArraySizeForBits(size_t i_numBits);
 	static size_t GetRequiredSizeForObject(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits);
 
 

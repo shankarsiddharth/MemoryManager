@@ -23,10 +23,10 @@ BitArray* BitArray::Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeO
 {
 	assert(i_numBits);
 
-	size_t requiredSize = GetRequiredArraySizeForBits(i_numBits);
+	size_t requiredSizeInBytes = GetRequiredPlatformWordArraySizeForBits(i_numBits) * sizeof(uintptr_t);
 	uintptr_t startAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory);
 	uintptr_t endAddressOfAvailableMemory = startAddressOfAvailableMemory + i_sizeOfAvailableMemory;
-	uintptr_t baseAddressOfBitData = endAddressOfAvailableMemory - requiredSize;
+	uintptr_t baseAddressOfBitData = endAddressOfAvailableMemory - requiredSizeInBytes;
 	uintptr_t alignedBaseAddressOfBitData = MemoryAlignmentHelper::AlignDown(baseAddressOfBitData);
 
 	uintptr_t rootAddress = alignedBaseAddressOfBitData - sizeof(BitArray);
@@ -50,12 +50,7 @@ BitArray* BitArray::Initialize(uintptr_t i_rootAddress, uintptr_t i_alignedBaseA
 	//sBaseAddressOfBitArray = i_alignedBaseAddressOfBitData;
 
 	numBits = i_numBits;
-	arraySize = i_numBits / sBitsPerElement;
-	const size_t extraBits = i_numBits % sBitsPerElement;
-	if (extraBits != 0)
-	{
-		arraySize = (i_numBits / sBitsPerElement) + 1;
-	}
+	arraySize = GetRequiredPlatformWordArraySizeForBits(numBits);
 
 #ifdef _WIN64
 	const uintptr_t fillValue = (i_bInitToZero ? static_cast<uintptr_t>(0) : UINT64_MAX);
@@ -112,7 +107,7 @@ void BitArray::InvertAllBits()
 	}
 }
 
-size_t BitArray::GetRequiredArraySizeForBits(size_t i_numBits)
+size_t BitArray::GetRequiredPlatformWordArraySizeForBits(size_t i_numBits)
 {
 	size_t requiredArraySize = (i_numBits / sBitsPerElement);
 	const size_t extraBits = i_numBits % sBitsPerElement;
@@ -125,9 +120,9 @@ size_t BitArray::GetRequiredArraySizeForBits(size_t i_numBits)
 
 size_t BitArray::GetRequiredSizeForObject(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits)
 {
-	size_t requiredSize = GetRequiredArraySizeForBits(i_numBits);
+	size_t requiredSizeInBytes = GetRequiredPlatformWordArraySizeForBits(i_numBits) * sizeof(uintptr_t);
 	uintptr_t endAddressOfAvailableMemory = reinterpret_cast<uintptr_t>(i_pBaseAddressOfAvailableMemory) + i_sizeOfAvailableMemory;
-	uintptr_t baseAddressOfBitData = endAddressOfAvailableMemory - requiredSize;
+	uintptr_t baseAddressOfBitData = endAddressOfAvailableMemory - requiredSizeInBytes;
 	uintptr_t alignedBaseAddressOfBitData = MemoryAlignmentHelper::AlignDown(baseAddressOfBitData);
 
 	uintptr_t rootAddress = alignedBaseAddressOfBitData - sizeof(BitArray);

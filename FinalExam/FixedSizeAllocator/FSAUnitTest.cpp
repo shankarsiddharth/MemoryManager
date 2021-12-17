@@ -41,7 +41,7 @@ int main(int i_arg, char**)
 	uintptr_t endAddress = reinterpret_cast<uintptr_t>(pHeapMemory) + sizeHeap;
 	printf("End Heap Address 0x%" PRIXPTR "\n", endAddress);
 
-	FixedSizeAllocator* fixed_size_allocator = FixedSizeAllocator::Create(pHeapMemory, sizeHeap, 16, 8);
+	FixedSizeAllocator* fixed_size_allocator = FixedSizeAllocator::Create(pHeapMemory, sizeHeap, 16, 65);
 
 	void* address1 = fixed_size_allocator->Alloc();
 	void* pDebugMemoryStart = address1;

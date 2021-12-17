@@ -7,7 +7,7 @@ public:
 	static BitArray* Create(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits, bool i_bInitToZero = true);
 	void Destroy();
 
-	static size_t GetRequiredArraySizeForBits(size_t i_numBits);
+	static size_t GetRequiredPlatformWordArraySizeForBits(size_t i_numBits);
 	static size_t GetRequiredSizeForObject(void* i_pBaseAddressOfAvailableMemory, size_t i_sizeOfAvailableMemory, size_t i_numBits);
 
 	size_t GetBitArraySize() const;
