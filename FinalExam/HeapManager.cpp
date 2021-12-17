@@ -17,8 +17,7 @@ HeapManager* HeapManager::Get()
 HeapManager* HeapManager::Create(void* i_pMemory, size_t i_bytes, unsigned int i_numDescriptors, FSAData* i_FSAData/* = nullptr*/, size_t i_numFSAs/* = 0*/)
 {
 	//Default Fixed-Size Allocators
-	//FSAData iFSAData[] = { {96,8}, {32, 4}, {16, 2} };
-	FSAData iFSAData[] = { {96,400}, {32, 200}, {16, 100} };
+	FSAData iFSAData[] = { {16, 10}, {32, 20}, {96,40} };
 	i_numFSAs = 3;
 	
 	assert(i_bytes > sizeof(HeapManager));

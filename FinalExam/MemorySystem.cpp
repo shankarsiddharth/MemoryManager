@@ -5,7 +5,7 @@
 bool InitializeMemorySystem(void* i_pHeapMemory, size_t i_sizeHeapMemory, unsigned int i_OptionalNumDescriptors)
 {
 	// create your HeapManager and FixedSizeAllocators
-	FSAData FSAInfoData[] = { {96,400}, {32, 200}, {16, 100} };
+	FSAData FSAInfoData[] = { {16, 100}, {32, 200}, {96,400} };
 	HeapManager::Create(i_pHeapMemory, i_sizeHeapMemory, i_OptionalNumDescriptors, FSAInfoData, sizeof(FSAInfoData)/sizeof(FSAData));
 	return true;
 }
