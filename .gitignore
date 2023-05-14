@@ -1,0 +1,14 @@
+
+
+# Project Temporary Files
+#-------------------------------
+
+.idea
+
+/venv
+
+/docs/_build
+/docs/doxygen
+/docs/api
+
+src/.idea/

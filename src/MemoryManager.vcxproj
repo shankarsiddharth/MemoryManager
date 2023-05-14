@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{41797437-2873-4833-B294-7913DB3A24FE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>FinalExamSampleProject</RootNamespace>
+    <RootNamespace>MemoryManagerSampleProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
